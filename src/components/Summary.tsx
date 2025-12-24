@@ -1,6 +1,14 @@
 import React from 'react';
 
-const Summary = ({ calcData, benefits }) => {
+import { CalcData } from './Calculator';
+import { Benefit } from './BenefitsInput';
+
+interface SummaryProps {
+  calcData: CalcData;
+  benefits: Benefit[];
+}
+
+const Summary: React.FC<SummaryProps> = ({ calcData, benefits }) => {
   const totalBenefits = benefits.reduce((acc, curr) => acc + curr.value, 0);
   const netEffectiveFee = Math.max(0, calcData.annualFee - totalBenefits);
   

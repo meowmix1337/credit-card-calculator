@@ -1,4 +1,39 @@
-export const creditCards = [
+export interface CardSub {
+  amount: number;
+  spend: number;
+  months: number;
+  text: string;
+}
+
+export interface CardMultipliers {
+  dining?: number;
+  groceries?: number;
+  travel?: number;
+  streaming?: number;
+  gas?: number;
+  general?: number;
+  drugstores?: number;
+  transit?: number;
+  entertainment?: number;
+  rent?: number;
+}
+
+export interface Card {
+  id: string;
+  name: string;
+  annualFee: number;
+  multipliers: CardMultipliers;
+  credits: number;
+  defaultEstimatedCredits?: number;
+  creditBreakdown?: string;
+  sub?: CardSub;
+  pointValue: number;
+  brand: string;
+  color: string;
+  tier: string;
+}
+
+export const creditCards: Card[] = [
   // --- Premium Tier ---
   {
     id: 'amex_platinum',

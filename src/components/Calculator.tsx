@@ -1,7 +1,18 @@
 import React from 'react';
 
-const Calculator = ({ data, onChange }) => {
-  const handleChange = (field, value) => {
+export interface CalcData {
+  annualFee: number;
+  pointValue: number;
+  earningRate: number;
+}
+
+interface CalculatorProps {
+  data: CalcData;
+  onChange: (data: CalcData) => void;
+}
+
+const Calculator: React.FC<CalculatorProps> = ({ data, onChange }) => {
+  const handleChange = (field: keyof CalcData, value: string) => {
     // Prevent leading zeros by stripping them if not decimal
     // If value is empty, set to 0 or empty string
     if (value === '') {

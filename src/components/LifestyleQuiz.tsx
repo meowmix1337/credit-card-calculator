@@ -1,7 +1,20 @@
 import React from 'react';
 
-const LifestyleQuiz = ({ inputs, onChange }) => {
-  const handleChange = (field, value) => {
+export interface Lifestyle {
+  monthlyDining: number | '';
+  monthlyGroceries: number | '';
+  monthlyTravel: number | '';
+  monthlyStreaming: number | '';
+  airline: string;
+}
+
+interface LifestyleQuizProps {
+  inputs: Lifestyle;
+  onChange: (inputs: Lifestyle) => void;
+}
+
+const LifestyleQuiz: React.FC<LifestyleQuizProps> = ({ inputs, onChange }) => {
+  const handleChange = (field: keyof Lifestyle, value: string) => {
     // Sanitize input: allow empty string, otherwise parse float
     if (value === '') {
       onChange({ ...inputs, [field]: '' });
@@ -10,11 +23,6 @@ const LifestyleQuiz = ({ inputs, onChange }) => {
     const num = parseFloat(value);
     onChange({ ...inputs, [field]: isNaN(num) ? 0 : num });
   };
-
-  const handleBlur = (field, value) => {
-      // On blur, if empty, reset to 0 to keep state clean, or just leave it.
-      // Better UX: leave it, but treat as 0 in calculation.
-  }
 
   return (
     <div className="glass-card animate-fade-in" style={{ animationDelay: '0.2s' }}>

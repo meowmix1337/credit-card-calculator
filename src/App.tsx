@@ -1,22 +1,22 @@
 import React, { useState } from 'react';
 import './App.css';
 import Layout from './components/Layout';
-import Calculator from './components/Calculator';
-import BenefitsInput from './components/BenefitsInput';
+import Calculator, { CalcData } from './components/Calculator';
+import BenefitsInput, { Benefit } from './components/BenefitsInput';
 import Summary from './components/Summary';
-import LifestyleQuiz from './components/LifestyleQuiz';
+import LifestyleQuiz, { Lifestyle } from './components/LifestyleQuiz';
 import Recommendation from './components/Recommendation';
 
 function App() {
-  const [calcData, setCalcData] = useState({
+  const [calcData, setCalcData] = useState<CalcData>({
     annualFee: 0,
     pointValue: 1.0, // in cents
     earningRate: 1.0,
   });
 
-  const [benefits, setBenefits] = useState([]);
+  const [benefits, setBenefits] = useState<Benefit[]>([]);
 
-  const [lifestyle, setLifestyle] = useState({
+  const [lifestyle, setLifestyle] = useState<Lifestyle>({
     monthlyDining: '',
     monthlyGroceries: '',
     monthlyTravel: '',
@@ -24,7 +24,7 @@ function App() {
     airline: 'any',
   });
 
-  const [activeTab, setActiveTab] = useState('recommender'); // Default to recommender as it's the popular feature
+  const [activeTab, setActiveTab] = useState<'recommender' | 'calculator'>('recommender'); // Default to recommender as it's the popular feature
 
   return (
     <Layout>

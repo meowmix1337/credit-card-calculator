@@ -1,17 +1,41 @@
 import React, { useMemo, useState } from "react";
-import { creditCards } from "../data/cards";
+import { creditCards, Card } from "../data/cards";
+import { Lifestyle } from "./LifestyleQuiz";
 
-const Recommendation = ({ lifestyle }) => {
+interface RecommendationProps {
+  lifestyle: Lifestyle;
+}
+
+interface BreakEvenCategory {
+  label: string;
+  mult: number;
+  spendNeeded: number;
+}
+
+interface ScoredCard extends Card {
+  netValue: number;
+  recurringValue: number;
+  pointsEarned: number;
+  subValue: number;
+  isSubEligible: boolean;
+  breakEvenSpend: number;
+  breakEvenBreakdown?: BreakEvenCategory[];
+  effectiveMultiplier?: number;
+  pointBreakdown: { cat: string; spend: number; mult: number }[];
+}
+
+const Recommendation: React.FC<RecommendationProps> = ({ lifestyle }) => {
   const [showAll, setShowAll] = useState(false);
 
   const recommendations = useMemo(() => {
     // 1. Calculate value for each card based on lifestyle
-    const scoredCards = creditCards.map((card) => {
+    const scoredCards: ScoredCard[] = creditCards.map((card) => {
       // Annualized spend
-      const diningSpend = (parseFloat(lifestyle.monthlyDining) || 0) * 12;
-      const grocerySpend = (parseFloat(lifestyle.monthlyGroceries) || 0) * 12;
-      const travelSpend = (parseFloat(lifestyle.monthlyTravel) || 0) * 12;
-      const streamingSpend = (parseFloat(lifestyle.monthlyStreaming) || 0) * 12;
+      // Annualized spend
+      const diningSpend = (parseFloat(String(lifestyle.monthlyDining)) || 0) * 12;
+      const grocerySpend = (parseFloat(String(lifestyle.monthlyGroceries)) || 0) * 12;
+      const travelSpend = (parseFloat(String(lifestyle.monthlyTravel)) || 0) * 12;
+      const streamingSpend = (parseFloat(String(lifestyle.monthlyStreaming)) || 0) * 12;
 
       // Assume "general" spend is 0 for now unless we add an input for it,
       // or we could assume a base baseline spend to make general multipliers matter.
@@ -105,7 +129,7 @@ const Recommendation = ({ lifestyle }) => {
       }
 
       // Calculate Category-Specific Break Even
-      const breakEvenBreakdown = [];
+      const breakEvenBreakdown: BreakEvenCategory[] = [];
       if (netEffectiveFee > 0 && card.pointValue > 0) {
           const categories = [
               { label: 'Dining', mult: card.multipliers.dining || 1 },
@@ -146,10 +170,10 @@ const Recommendation = ({ lifestyle }) => {
   }, [lifestyle]);
 
   const totalAnnualSpend = 
-    ((parseFloat(lifestyle.monthlyDining) || 0) +
-    (parseFloat(lifestyle.monthlyGroceries) || 0) +
-    (parseFloat(lifestyle.monthlyTravel) || 0) +
-    (parseFloat(lifestyle.monthlyStreaming) || 0)) * 12;
+    ((parseFloat(String(lifestyle.monthlyDining)) || 0) +
+    (parseFloat(String(lifestyle.monthlyGroceries)) || 0) +
+    (parseFloat(String(lifestyle.monthlyTravel)) || 0) +
+    (parseFloat(String(lifestyle.monthlyStreaming)) || 0)) * 12;
 
   const displayedCards = showAll
     ? recommendations
@@ -226,7 +250,7 @@ const Recommendation = ({ lifestyle }) => {
                       fontWeight: "bold",
                     }}
                   >
-                    🎉 Includes New Cardmember Offer: {card.sub.text}
+                    🎉 Includes New Cardmember Offer: {card.sub?.text}
                   </div>
                 )}
               </div>
@@ -314,7 +338,7 @@ const Recommendation = ({ lifestyle }) => {
                   <span style={{ opacity: 0.8, color: "#4ade80" }}>
                     Welcome Bonus{" "}
                     <span style={{ fontSize: "0.75rem", opacity: 0.7 }}>
-                      ({card.sub.amount.toLocaleString()} pts @ $
+                      ({card.sub?.amount.toLocaleString()} pts @ $
                       {card.pointValue})
                     </span>
                     :
@@ -325,7 +349,7 @@ const Recommendation = ({ lifestyle }) => {
                 </div>
               )}
 
-              {card.defaultEstimatedCredits > 0 && (
+              {(card.defaultEstimatedCredits ?? 0) > 0 && (
                 <div
                   style={{
                     display: "flex",
@@ -405,7 +429,7 @@ const Recommendation = ({ lifestyle }) => {
                           </summary>
                           <div style={{ background: 'rgba(0,0,0,0.2)', padding: '0.5rem', borderRadius: '4px', marginTop: '0.25rem' }}>
                                 <div style={{ marginBottom: '0.25rem', opacity: 0.7, fontStyle: 'italic' }}>If you spent ONLY on...</div>
-                                {card.breakEvenBreakdown.map((item, idx) => (
+                                {card.breakEvenBreakdown?.map((item, idx) => (
                                     <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.1rem' }}>
                                         <span>{item.label} ({item.mult}x):</span>
                                         <span style={{ fontWeight: 'bold' }}>${item.spendNeeded.toLocaleString(undefined, { maximumFractionDigits: 0 })}</span>
@@ -415,7 +439,7 @@ const Recommendation = ({ lifestyle }) => {
                       </details>
                       { card.effectiveMultiplier !== (card.multipliers.general || 1) && (
                          <div style={{ fontSize: '0.7rem', opacity: 0.5, textAlign: 'right', marginTop: '0.25rem' }}>
-                            (at {card.effectiveMultiplier.toFixed(2)}x effective rate)
+                            (at {card.effectiveMultiplier?.toFixed(2)}x effective rate)
                          </div>
                       )}
                   </div>

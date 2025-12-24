@@ -1,10 +1,21 @@
 import React, { useState } from 'react';
 
-const BenefitsInput = ({ benefits, setBenefits }) => {
+export interface Benefit {
+  id: number;
+  name: string;
+  value: number;
+}
+
+interface BenefitsInputProps {
+  benefits: Benefit[];
+  setBenefits: (benefits: Benefit[]) => void;
+}
+
+const BenefitsInput: React.FC<BenefitsInputProps> = ({ benefits, setBenefits }) => {
   const [name, setName] = useState('');
   const [value, setValue] = useState('');
 
-  const addBenefit = (e) => {
+  const addBenefit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!name || !value) return;
     setBenefits([...benefits, { id: Date.now(), name, value: parseFloat(value) }]);
@@ -12,7 +23,7 @@ const BenefitsInput = ({ benefits, setBenefits }) => {
     setValue('');
   };
 
-  const removeBenefit = (id) => {
+  const removeBenefit = (id: number) => {
     setBenefits(benefits.filter(b => b.id !== id));
   };
 
