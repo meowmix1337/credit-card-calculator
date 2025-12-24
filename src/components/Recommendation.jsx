@@ -86,12 +86,42 @@ const Recommendation = ({ lifestyle }) => {
         0,
         card.annualFee - (card.defaultEstimatedCredits || 0)
       );
+      
       let breakEvenSpend = 0;
+      let effectiveMultiplier = 1;
       const baseMultiplier = card.multipliers.general || 1;
 
+      // Calculate Effective Multiplier based on user's spend mix
+      if (points > 0 && totalCategorized > 0) {
+          effectiveMultiplier = points / totalCategorized; // Avg points per dollar
+      } else {
+          // Fallback to general if no spend entered
+          effectiveMultiplier = baseMultiplier;
+      }
+
       if (netEffectiveFee > 0 && card.pointValue > 0) {
-        // Break Even = NetFee / (PointValue * Multiplier)
-        breakEvenSpend = netEffectiveFee / (card.pointValue * baseMultiplier);
+        // Break Even = NetFee / (PointValue * EffectiveMultiplier)
+        breakEvenSpend = netEffectiveFee / (card.pointValue * effectiveMultiplier);
+      }
+
+      // Calculate Category-Specific Break Even
+      const breakEvenBreakdown = [];
+      if (netEffectiveFee > 0 && card.pointValue > 0) {
+          const categories = [
+              { label: 'Dining', mult: card.multipliers.dining || 1 },
+              { label: 'Groceries', mult: card.multipliers.groceries || 1 },
+              { label: 'Travel', mult: card.multipliers.travel || 1 },
+              { label: 'Streaming', mult: card.multipliers.streaming || 1 },
+              { label: 'General', mult: baseMultiplier },
+          ];
+          
+          categories.forEach(cat => {
+               const spendNeeded = netEffectiveFee / (card.pointValue * cat.mult);
+               breakEvenBreakdown.push({
+                   ...cat,
+                   spendNeeded
+               });
+          });
       }
 
       // Year 1 Value: Recurring + SUB
@@ -105,6 +135,8 @@ const Recommendation = ({ lifestyle }) => {
         subValue,
         isSubEligible,
         breakEvenSpend,
+        breakEvenBreakdown,
+        effectiveMultiplier,
         pointBreakdown: breakdown,
       };
     });
@@ -342,7 +374,9 @@ const Recommendation = ({ lifestyle }) => {
                   }}
                 >
                   <span style={{ fontSize: "0.8rem", opacity: 0.7 }}>
-                    Spend to break even:
+                     {card.breakEvenSpend > 0 && card.effectiveMultiplier !== (card.multipliers.general || 1) 
+                        ? 'Est. Break Even (Your Mix):' 
+                        : 'Spend to break even:'}
                   </span>
                   <span
                     style={{
@@ -361,15 +395,29 @@ const Recommendation = ({ lifestyle }) => {
                     }
                   </span>
                 </div>
+                
                 {card.breakEvenSpend > 0 && (
-                  <div
-                    style={{
-                      fontSize: "0.7rem",
-                      opacity: 0.5,
-                      textAlign: "right",
-                    }}
-                  >
-                    (at {card.multipliers.general || 1}x earning rate)
+                  <div style={{ marginTop: '0.5rem' }}>
+                      <details style={{ fontSize: '0.75rem', opacity: 0.8, cursor: 'pointer' }}>
+                          <summary style={{ listStyle: 'none', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                              <span>Show Category Breakdown</span>
+                              <span style={{ opacity: 0.5, fontSize: '0.7rem' }}>▼</span>
+                          </summary>
+                          <div style={{ background: 'rgba(0,0,0,0.2)', padding: '0.5rem', borderRadius: '4px', marginTop: '0.25rem' }}>
+                                <div style={{ marginBottom: '0.25rem', opacity: 0.7, fontStyle: 'italic' }}>If you spent ONLY on...</div>
+                                {card.breakEvenBreakdown.map((item, idx) => (
+                                    <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.1rem' }}>
+                                        <span>{item.label} ({item.mult}x):</span>
+                                        <span style={{ fontWeight: 'bold' }}>${item.spendNeeded.toLocaleString(undefined, { maximumFractionDigits: 0 })}</span>
+                                    </div>
+                                ))}
+                          </div>
+                      </details>
+                      { card.effectiveMultiplier !== (card.multipliers.general || 1) && (
+                         <div style={{ fontSize: '0.7rem', opacity: 0.5, textAlign: 'right', marginTop: '0.25rem' }}>
+                            (at {card.effectiveMultiplier.toFixed(2)}x effective rate)
+                         </div>
+                      )}
                   </div>
                 )}
               </div>
