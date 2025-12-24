@@ -22,10 +22,19 @@ interface ScoredCard extends Card {
   breakEvenBreakdown?: BreakEvenCategory[];
   effectiveMultiplier?: number;
   pointBreakdown: { cat: string; spend: number; mult: number }[];
+  appliedCredits: number;
 }
 
 const Recommendation: React.FC<RecommendationProps> = ({ lifestyle }) => {
   const [showAll, setShowAll] = useState(false);
+  const [selectedBenefits, setSelectedBenefits] = useState<Record<string, boolean>>({});
+
+  const toggleBenefit = (cardId: string, benefitId: string, value: boolean) => {
+      setSelectedBenefits(prev => ({
+          ...prev,
+          [`${cardId}-${benefitId}`]: value
+      }));
+  };
 
   const recommendations = useMemo(() => {
     // 1. Calculate value for each card based on lifestyle
@@ -87,6 +96,16 @@ const Recommendation: React.FC<RecommendationProps> = ({ lifestyle }) => {
         streamingSpend / 12 +
         generalSpend / 12;
 
+      // Calculate dynamic credits
+      let appliedCredits = card.defaultEstimatedCredits || 0;
+      if (card.detailedBenefits) {
+          appliedCredits = card.detailedBenefits.reduce((acc, b) => {
+              const key = `${card.id}-${b.id}`;
+              const isActive = selectedBenefits[key] ?? b.isDefault ?? false;
+              return acc + (isActive ? b.value : 0);
+          }, 0);
+      }
+      
       if (card.sub) {
         // Eligibility check: Monthly Spend * months >= Requirement
         // Note: This assumes steady spending.
@@ -99,13 +118,13 @@ const Recommendation: React.FC<RecommendationProps> = ({ lifestyle }) => {
       // Values
       // Recurring Value: Points + Credits - Annual Fee
       const recurringValue =
-        pointsValue + (card.defaultEstimatedCredits || 0) - card.annualFee;
+        pointsValue + appliedCredits - card.annualFee;
 
       // Calculate Break Even Spend
-      // Net Fee = AnnualFee - defaultEstimatedCredits
+      // Net Fee = AnnualFee - credits
       const netEffectiveFee = Math.max(
         0,
-        card.annualFee - (card.defaultEstimatedCredits || 0)
+        card.annualFee - appliedCredits
       );
       
       let breakEvenSpend = 0;
@@ -159,12 +178,13 @@ const Recommendation: React.FC<RecommendationProps> = ({ lifestyle }) => {
         breakEvenBreakdown,
         effectiveMultiplier,
         pointBreakdown: breakdown,
+        appliedCredits
       };
     });
 
     // 2. Sort by Net Value descending
     return scoredCards.sort((a, b) => b.netValue - a.netValue);
-  }, [lifestyle]);
+  }, [lifestyle, selectedBenefits]);
 
   const totalAnnualSpend = 
     ((parseFloat(String(lifestyle.monthlyDining)) || 0) +
@@ -347,7 +367,7 @@ const Recommendation: React.FC<RecommendationProps> = ({ lifestyle }) => {
                 </div>
               )}
 
-              {(card.defaultEstimatedCredits ?? 0) > 0 && (
+              {(card.appliedCredits ?? 0) > 0 && (
                 <div
                   style={{
                     display: "flex",
@@ -363,10 +383,36 @@ const Recommendation: React.FC<RecommendationProps> = ({ lifestyle }) => {
                     :
                   </span>
                   <span style={{ color: "#fbbf24" }}>
-                    +${card.defaultEstimatedCredits}
+                    +${card.appliedCredits}
                   </span>
                 </div>
               )}
+              
+                {/* Configurable Benefits Toggle */}
+                {card.detailedBenefits && (
+                    <div style={{ marginTop: '0.5rem', background: 'rgba(0,0,0,0.15)', padding: '0.5rem', borderRadius: '4px' }}>
+                        <div style={{ fontSize: '0.75rem', fontWeight: 'bold', marginBottom: '0.25rem', opacity: 0.8, borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '0.1rem' }}>Include Benefits:</div>
+                        {card.detailedBenefits.map(b => {
+                             const key = `${card.id}-${b.id}`;
+                             const isActive = selectedBenefits[key] ?? b.isDefault ?? false;
+                             return (
+                                 <label key={b.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.75rem', marginBottom: '0.2rem', cursor: 'pointer', opacity: isActive ? 1 : 0.6 }}>
+                                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                                         <input 
+                                            type="checkbox" 
+                                            checked={isActive} 
+                                            onChange={() => toggleBenefit(card.id, b.id, !isActive)} 
+                                            style={{ margin: 0, width: 'auto' }}
+                                         />
+                                         <span>{b.name}</span>
+                                     </div>
+                                     <span>${b.value}</span>
+                                 </label>
+                             )
+                        })}
+                    </div>
+                )}
+              
               <div
                 style={{
                   display: "flex",
@@ -445,7 +491,7 @@ const Recommendation: React.FC<RecommendationProps> = ({ lifestyle }) => {
               </div>
             </div>
 
-            {card.creditBreakdown && card.creditBreakdown !== "None" && (
+            {(!card.detailedBenefits && card.creditBreakdown && card.creditBreakdown !== "None") && (
               <div
                 style={{
                   marginTop: "0.75rem",
