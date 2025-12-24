@@ -1,78 +1,88 @@
-# Credit Card Calculator & Recommender
+# Credit Card Recommender
 
-A modern React application designed to help users make informed decisions about credit cards. It provides tools to analyze the value of specific cards and recommends the best options based on individual spending habits.
+A powerful, interactive application designed to help users maximize their credit card rewards and conduct detailed break-even analysis for premium cards. Built with **React**, **TypeScript**, and **Vite**.
 
-## Features
+![Favicon](./public/favicon.png)
 
-### 1. Card Recommender
+## Key Features
 
-Find the perfect credit card that matches your lifestyle.
+### 1. Smart Card Recommender
 
-- Input your monthly spending across various categories (Dining, Groceries, Travel, Streaming).
-- Get tailored recommendations based on your spending profile.
-- Compare different cards to maximize your rewards.
+**"Find the perfect card for your lifestyle."**
 
-### 2. Break Even Calculator
+- **Sticky Lifestyle Profile**: Input your monthly spending (Dining, Groceries, Travel, Streaming, and General) in a persistent sidebar that stays with you as you browse.
+- **Real-Time ROI**: Instantly calculating the "First Year Value" and "Recurring Annual Value" for every card based on your specific spend.
+- **Total Annual Spend**: view a summary of your total analyzed spending.
 
-Determine if a credit card with an annual fee is worth it for you.
+### 2. Configurable Benefits & Break-Even Analysis
 
-- Input card details: Annual Fee, Point Value, and Earning Rate.
-- Add card benefits and their estimated dollar value.
-- View a break-even analysis to see how much you need to spend to offset the annual fee.
+**"Is the annual fee worth it? See the real math."**
 
-## Tech Stack
+- **Granular Benefit Toggles**: Don't blindly accept "value". Toggle specific benefits on/off (e.g., "$120 Uber Cash", "$100 Saks Credit") to see if the card works for _you_.
+- **Dynamic Math**: Unchecking a benefit immediately updates the "Net Effective Fee" and "Spend to Break Even".
+- **Category Breakdown**: See exactly how much you'd need to spend in specific categories (e.g., "Dining Only") to offset the fee.
 
-- **Frontend Framework**: React
-- **Build Tool**: Vite
-- **Styling**: CSS with responsive design and animations
-- **Linting**: ESLint
+### 3. Up-to-Date Card Data
+
+Includes the latest offers and data for major premium cards (as of late 2025/early 2026 profiles):
+
+- **Chase Sapphire Reserve**: 125k Welcome Offer, $795 AF, new Dining/DoorDash/Apple/Lyft credits.
+- **Chase Sapphire Preferred**: 75k Welcome Offer, DashPass & Lyft benefits.
+- **Amex Platinum**: Detailed breakdown of 10+ credits (Hotel, Resy, SoulCycle, etc.).
+- **Capital One Venture X**: Global Entry & Travel credits.
+- **Citi Strata Premier**: Toggleable Hotel credit.
+- **Blue Cash Preferred**: Updated Disney Bundle value.
+
+## Technology Stack
+
+- **Core**: React 18, TypeScript 5.7
+- **Build**: Vite
+- **Styling**: Vanilla CSS (Responsive, Glassmorphism design)
+- **Linting**: ESLint + TypeScript-ESLint
 
 ## Getting Started
 
-Follow these steps to get the project up and running on your local machine.
-
 ### Prerequisites
 
-- Node.js installed on your machine.
+- Node.js (v18+ recommended)
 
 ### Installation
 
-1. Clone the repository:
+1.  Clone the repository:
 
-   ```bash
-   git clone <repository-url>
-   cd credit-card-calculator
-   ```
+    ```bash
+    git clone <repository-url>
+    cd credit-card-calculator
+    ```
 
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
+2.  Install dependencies:
+    ```bash
+    npm install
+    ```
 
-### Running Locally
+### Development
 
-Start the development server:
+Start the local development server:
 
 ```bash
 npm run dev
 ```
 
-The application will be available at `http://localhost:5175` (or the port shown in your terminal).
+Open `http://localhost:5175` to view.
 
-### Building for Production
+### Production Build
 
-To create a production-ready build:
+Type-check and build for production:
 
 ```bash
 npm run build
 ```
 
-This will generate static assets in the `dist` folder.
+Artifacts will be in the `dist/` directory.
 
-### Linting
+## Project Structure
 
-To run the linter and check for code quality issues:
-
-```bash
-npm run lint
-```
+- `src/data/cards.ts`: Central database of credit card offers, multipliers, and configurable benefits.
+- `src/components/Recommendation.tsx`: Core logic for scoring cards, calculating break-even, and rendering the benefit toggles.
+- `src/components/LifestyleQuiz.tsx`: Sticky input form for user spending.
+- `src/components/Calculator.tsx`: Standalone break-even tool (Tab 2).
