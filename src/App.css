@@ -133,6 +133,15 @@ select:focus {
   gap: 2rem;
   max-width: 1200px;
   margin: 0 auto;
+  align-items: start;
+}
+
+@media (min-width: 768px) {
+  .sticky-column {
+    position: sticky;
+    top: 2rem;
+    height: fit-content;
+  }
 }
 
 .form-group {

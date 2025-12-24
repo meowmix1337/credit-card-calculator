@@ -73,7 +73,9 @@ function App() {
           <section className="animate-fade-in">
             <h1 style={{ fontSize: '2.5rem', marginBottom: '1.5rem' }}>Find Your Perfect Card</h1>
             <div className="grid-container" style={{ margin: 0, padding: 0 }}>
-              <LifestyleQuiz inputs={lifestyle} onChange={setLifestyle} />
+              <div className="sticky-column">
+                <LifestyleQuiz inputs={lifestyle} onChange={setLifestyle} />
+              </div>
               <Recommendation lifestyle={lifestyle} />
             </div>
           </section>
