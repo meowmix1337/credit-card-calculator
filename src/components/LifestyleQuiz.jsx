@@ -1,0 +1,90 @@
+import React from 'react';
+
+const LifestyleQuiz = ({ inputs, onChange }) => {
+  const handleChange = (field, value) => {
+    // Sanitize input: allow empty string, otherwise parse float
+    if (value === '') {
+      onChange({ ...inputs, [field]: '' });
+      return;
+    }
+    const num = parseFloat(value);
+    onChange({ ...inputs, [field]: isNaN(num) ? 0 : num });
+  };
+
+  const handleBlur = (field, value) => {
+      // On blur, if empty, reset to 0 to keep state clean, or just leave it.
+      // Better UX: leave it, but treat as 0 in calculation.
+  }
+
+  return (
+    <div className="glass-card animate-fade-in" style={{ animationDelay: '0.2s' }}>
+      <h2>Lifestyle Profile</h2>
+      <p style={{ marginBottom: '1.5rem', color: '#94a3b8' }}>
+        Enter your <strong>monthly</strong> spending estimates to find the perfect card.
+      </p>
+
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+        <div className="form-group">
+          <label>Dining & Restaurants ($)</label>
+          <input 
+            type="number" 
+            min="0"
+            value={inputs.monthlyDining} 
+            onChange={(e) => handleChange('monthlyDining', e.target.value)}
+            placeholder="0"
+          />
+        </div>
+
+        <div className="form-group">
+          <label>Groceries ($)</label>
+          <input 
+            type="number" 
+            min="0"
+            value={inputs.monthlyGroceries} 
+            onChange={(e) => handleChange('monthlyGroceries', e.target.value)}
+            placeholder="0"
+          />
+        </div>
+
+        <div className="form-group">
+          <label>Travel & Flights ($)</label>
+          <input 
+            type="number" 
+            min="0"
+            value={inputs.monthlyTravel} 
+            onChange={(e) => handleChange('monthlyTravel', e.target.value)}
+            placeholder="0"
+          />
+        </div>
+
+        <div className="form-group">
+          <label>Streaming Services ($)</label>
+          <input 
+            type="number" 
+            min="0"
+            value={inputs.monthlyStreaming} 
+            onChange={(e) => handleChange('monthlyStreaming', e.target.value)}
+            placeholder="0"
+          />
+        </div>
+      </div>
+
+      <div className="form-group" style={{ marginTop: '1rem' }}>
+        <label>Preferred Airline</label>
+        <select 
+            value={inputs.airline} 
+            onChange={(e) => onChange({...inputs, airline: e.target.value})}
+            style={{ width: '100%' }}
+        >
+          <option value="any">Any / No Preference</option>
+          <option value="delta">Delta</option>
+          <option value="united">United</option>
+          <option value="american">American Airlines</option>
+          <option value="southwest">Southwest</option>
+        </select>
+      </div>
+    </div>
+  );
+};
+
+export default LifestyleQuiz;
