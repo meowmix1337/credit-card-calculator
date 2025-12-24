@@ -14,7 +14,7 @@ export const creditCards = [
     },
     credits: 1400,
     defaultEstimatedCredits: 500, 
-    creditBreakdown: "$200 Hotel + $200 Airline + $200 Uber + $240 Digital Entertainment + $155 Walmart+",
+    creditBreakdown: "$200 Hotel + $200 Airline + $200 Uber + $200 Digital Ent. (conservative est.)",
     sub: {
         amount: 80000,
         spend: 8000,
@@ -49,7 +49,7 @@ export const creditCards = [
     },
     pointValue: 0.02, 
     brand: 'Chase',
-    color: '#60a5fa', // Lighter Blue (was dark #1e3a8a)
+    color: '#60a5fa', 
     tier: 'Premium'
   },
   {
@@ -66,7 +66,7 @@ export const creditCards = [
     },
     credits: 300, 
     defaultEstimatedCredits: 400,
-    creditBreakdown: "$300 Travel Credit + 10,000 Anniversary Miles (~$100)",
+    creditBreakdown: "$300 Travel Credit + 10,000 Anniversary Miles ($100 value)",
     sub: {
         amount: 75000,
         spend: 4000,
@@ -75,7 +75,7 @@ export const creditCards = [
     },
     pointValue: 0.017,
     brand: 'Capital One',
-    color: '#94a3b8', // Lighter Slate (was #334155)
+    color: '#94a3b8', 
     tier: 'Premium'
   },
 
@@ -93,8 +93,8 @@ export const creditCards = [
       general: 1
     },
     credits: 424, 
-    defaultEstimatedCredits: 424,
-    creditBreakdown: "$120 Uber + $120 Dining + $100 Resy + $84 Dunkin'",
+    defaultEstimatedCredits: 240, 
+    creditBreakdown: "$120 Uber Cash + $120 Dining Credit. (Resy & Dunkin credits excluded from conservative est.)",
     sub: {
         amount: 60000,
         spend: 6000,
@@ -129,7 +129,7 @@ export const creditCards = [
     },
     pointValue: 0.02,
     brand: 'Chase',
-    color: '#38bdf8', // Sky Blue (was #0369a1)
+    color: '#38bdf8',
     tier: 'Mid'
   },
   {
@@ -155,7 +155,7 @@ export const creditCards = [
     },
     pointValue: 0.017, 
     brand: 'Citi',
-    color: '#2dd4bf', // Teal (was #0f766e)
+    color: '#2dd4bf', 
     tier: 'Mid'
   },
   
@@ -175,7 +175,7 @@ export const creditCards = [
     },
     credits: 0, 
     defaultEstimatedCredits: 0,
-    creditBreakdown: "$7 Monthly Disney Bundle Credit (optional)",
+    creditBreakdown: "$7/mo Disney Bundle (Subject to enrollment) - Optional",
     sub: {
         amount: 25000, // 250 = 25000cents
         spend: 3000,
@@ -257,7 +257,7 @@ export const creditCards = [
     creditBreakdown: "Rent Day benefits",
     pointValue: 0.02,
     brand: 'Bilt',
-    color: '#f8fafc', // White/Slate-50 (was Black #000000)
+    color: '#f8fafc', 
     tier: 'Entry'
   },
   {
@@ -284,7 +284,7 @@ export const creditCards = [
     },
     pointValue: 0.01, 
     brand: 'Chase',
-    color: '#94a3b8', // Slate 400
+    color: '#94a3b8', 
     tier: 'Entry'
   },
   {
