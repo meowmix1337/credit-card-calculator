@@ -50,7 +50,7 @@ const Summary: React.FC<SummaryProps> = ({ calcData, benefits }) => {
       </div>
 
       <div style={{ marginTop: '2rem', paddingTop: '1rem', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
-        <label style={{ fontSize: '0.875rem', opacity: 0.8 }}>Spend to Break Even</label>
+        <label style={{ fontSize: '0.875rem', opacity: 0.8 }}>Annual Spend to Break Even</label>
         {isFeeCovered ? (
           <div>
             <div className="result-value" style={{ color: '#4ade80' }}>$0.00</div>

@@ -5,6 +5,7 @@ export interface Lifestyle {
   monthlyGroceries: number | '';
   monthlyTravel: number | '';
   monthlyStreaming: number | '';
+  monthlyGeneral: number | '';
   airline: string;
 }
 
@@ -74,6 +75,20 @@ const LifestyleQuiz: React.FC<LifestyleQuizProps> = ({ inputs, onChange }) => {
             onChange={(e) => handleChange('monthlyStreaming', e.target.value)}
             placeholder="0"
           />
+        </div>
+
+        <div className="form-group" style={{ gridColumn: 'span 2' }}>
+          <label>General / Other ($)</label>
+          <input 
+            type="number" 
+            min="0"
+            value={inputs.monthlyGeneral} 
+            onChange={(e) => handleChange('monthlyGeneral', e.target.value)}
+            placeholder="0"
+          />
+          <small style={{ display: 'block', marginTop: '0.25rem', opacity: 0.6 }}>
+            Everything else (Gas, Retail, Bills, etc.)
+          </small>
         </div>
       </div>
 

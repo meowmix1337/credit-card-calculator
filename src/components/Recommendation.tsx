@@ -36,13 +36,10 @@ const Recommendation: React.FC<RecommendationProps> = ({ lifestyle }) => {
       const grocerySpend = (parseFloat(String(lifestyle.monthlyGroceries)) || 0) * 12;
       const travelSpend = (parseFloat(String(lifestyle.monthlyTravel)) || 0) * 12;
       const streamingSpend = (parseFloat(String(lifestyle.monthlyStreaming)) || 0) * 12;
+      const generalSpend = (parseFloat(String(lifestyle.monthlyGeneral)) || 0) * 12;
 
-      // Assume "general" spend is 0 for now unless we add an input for it,
-      // or we could assume a base baseline spend to make general multipliers matter.
-      // Let's assume general spend is roughly 20% of categorized spend for this model.
       const totalCategorized =
-        diningSpend + grocerySpend + travelSpend + streamingSpend;
-      const generalSpend = totalCategorized * 0.2;
+        diningSpend + grocerySpend + travelSpend + streamingSpend + generalSpend;
 
       // Detailed Points Calculation for Transparency
       const breakdown = [
@@ -173,7 +170,8 @@ const Recommendation: React.FC<RecommendationProps> = ({ lifestyle }) => {
     ((parseFloat(String(lifestyle.monthlyDining)) || 0) +
     (parseFloat(String(lifestyle.monthlyGroceries)) || 0) +
     (parseFloat(String(lifestyle.monthlyTravel)) || 0) +
-    (parseFloat(String(lifestyle.monthlyStreaming)) || 0)) * 12;
+    (parseFloat(String(lifestyle.monthlyStreaming)) || 0) +
+    (parseFloat(String(lifestyle.monthlyGeneral)) || 0)) * 12;
 
   const displayedCards = showAll
     ? recommendations
@@ -399,8 +397,8 @@ const Recommendation: React.FC<RecommendationProps> = ({ lifestyle }) => {
                 >
                   <span style={{ fontSize: "0.8rem", opacity: 0.7 }}>
                      {card.breakEvenSpend > 0 && card.effectiveMultiplier !== (card.multipliers.general || 1) 
-                        ? 'Est. Break Even (Your Mix):' 
-                        : 'Spend to break even:'}
+                        ? 'Est. Annual Break Even (Your Mix):' 
+                        : 'Annual Spend to break even:'}
                   </span>
                   <span
                     style={{

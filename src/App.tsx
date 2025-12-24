@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import './App.css';
 import Layout from './components/Layout';
 import Calculator, { CalcData } from './components/Calculator';
@@ -21,6 +21,7 @@ function App() {
     monthlyGroceries: '',
     monthlyTravel: '',
     monthlyStreaming: '',
+    monthlyGeneral: '',
     airline: 'any',
   });
 
