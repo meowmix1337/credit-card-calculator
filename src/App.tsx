@@ -23,6 +23,7 @@ function App() {
     monthlyStreaming: '',
     monthlyGeneral: '',
     airline: 'any',
+    redemptionStrategy: 'transfer',
   });
 
   const [activeTab, setActiveTab] = useState<'recommender' | 'calculator'>('recommender'); // Default to recommender as it's the popular feature

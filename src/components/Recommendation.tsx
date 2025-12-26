@@ -23,6 +23,14 @@ interface ScoredCard extends Card {
   effectiveMultiplier?: number;
   pointBreakdown: { cat: string; spend: number; mult: number }[];
   appliedCredits: number;
+  totalPoints: number;
+  totalPointsValue: number;
+  selectedPointValue: number;
+  allRedemptions: {
+    cash: { pointValue: number; netValue: number; recurringValue: number; totalPointsValue: number };
+    portal: { pointValue: number; netValue: number; recurringValue: number; totalPointsValue: number };
+    transfer: { pointValue: number; netValue: number; recurringValue: number; totalPointsValue: number };
+  };
 }
 
 const Recommendation: React.FC<RecommendationProps> = ({ lifestyle }) => {
@@ -84,7 +92,9 @@ const Recommendation: React.FC<RecommendationProps> = ({ lifestyle }) => {
         0
       );
 
-      const pointsValue = points * card.pointValue;
+      const strategy = lifestyle.redemptionStrategy || 'transfer';
+      const pointValue = card.redemptionValues[strategy];
+      const pointsValue = points * pointValue;
 
       // Calculate Sign-up Bonus (SUB) Eligibility
       let subValue = 0;
@@ -110,7 +120,7 @@ const Recommendation: React.FC<RecommendationProps> = ({ lifestyle }) => {
         // Eligibility check: Monthly Spend * months >= Requirement
         // Note: This assumes steady spending.
         if (totalMonthlySpend * card.sub.months >= card.sub.spend) {
-          subValue = card.sub.amount * card.pointValue;
+          subValue = card.sub.amount * pointValue;
           isSubEligible = true;
         }
       }
@@ -139,14 +149,14 @@ const Recommendation: React.FC<RecommendationProps> = ({ lifestyle }) => {
           effectiveMultiplier = baseMultiplier;
       }
 
-      if (netEffectiveFee > 0 && card.pointValue > 0) {
+      if (netEffectiveFee > 0 && pointValue > 0) {
         // Break Even = NetFee / (PointValue * EffectiveMultiplier)
-        breakEvenSpend = netEffectiveFee / (card.pointValue * effectiveMultiplier);
+        breakEvenSpend = netEffectiveFee / (pointValue * effectiveMultiplier);
       }
 
       // Calculate Category-Specific Break Even
       const breakEvenBreakdown: BreakEvenCategory[] = [];
-      if (netEffectiveFee > 0 && card.pointValue > 0) {
+      if (netEffectiveFee > 0 && pointValue > 0) {
           const categories = [
               { label: 'Dining', mult: card.multipliers.dining || 1 },
               { label: 'Groceries', mult: card.multipliers.groceries || 1 },
@@ -156,7 +166,7 @@ const Recommendation: React.FC<RecommendationProps> = ({ lifestyle }) => {
           ];
           
           categories.forEach(cat => {
-               const spendNeeded = netEffectiveFee / (card.pointValue * cat.mult);
+               const spendNeeded = netEffectiveFee / (pointValue * cat.mult);
                breakEvenBreakdown.push({
                    ...cat,
                    spendNeeded
@@ -178,7 +188,30 @@ const Recommendation: React.FC<RecommendationProps> = ({ lifestyle }) => {
         breakEvenBreakdown,
         effectiveMultiplier,
         pointBreakdown: breakdown,
-        appliedCredits
+        appliedCredits,
+        totalPoints: points + (isSubEligible && card.sub ? card.sub.amount : 0),
+        totalPointsValue: (points + (isSubEligible && card.sub ? card.sub.amount : 0)) * pointValue,
+        selectedPointValue: pointValue,
+        allRedemptions: {
+          cash: {
+            pointValue: card.redemptionValues.cash,
+            netValue: (points * card.redemptionValues.cash) + appliedCredits - card.annualFee + (isSubEligible && card.sub ? card.sub.amount * card.redemptionValues.cash : 0),
+            recurringValue: (points * card.redemptionValues.cash) + appliedCredits - card.annualFee,
+            totalPointsValue: (points + (isSubEligible && card.sub ? card.sub.amount : 0)) * card.redemptionValues.cash,
+          },
+          portal: {
+            pointValue: card.redemptionValues.portal,
+            netValue: (points * card.redemptionValues.portal) + appliedCredits - card.annualFee + (isSubEligible && card.sub ? card.sub.amount * card.redemptionValues.portal : 0),
+            recurringValue: (points * card.redemptionValues.portal) + appliedCredits - card.annualFee,
+            totalPointsValue: (points + (isSubEligible && card.sub ? card.sub.amount : 0)) * card.redemptionValues.portal,
+          },
+          transfer: {
+            pointValue: card.redemptionValues.transfer,
+            netValue: (points * card.redemptionValues.transfer) + appliedCredits - card.annualFee + (isSubEligible && card.sub ? card.sub.amount * card.redemptionValues.transfer : 0),
+            recurringValue: (points * card.redemptionValues.transfer) + appliedCredits - card.annualFee,
+            totalPointsValue: (points + (isSubEligible && card.sub ? card.sub.amount : 0)) * card.redemptionValues.transfer,
+          },
+        },
       };
     });
 
@@ -273,20 +306,34 @@ const Recommendation: React.FC<RecommendationProps> = ({ lifestyle }) => {
                 )}
               </div>
               <div style={{ textAlign: "right" }}>
-                <div style={{ fontSize: "0.8rem", opacity: 0.7 }}>
-                  Year 1 Value
+                <div style={{ fontSize: "0.75rem", opacity: 0.6, marginBottom: "0.25rem" }}>
+                  Year 1 Value by Redemption
                 </div>
-                <div
-                  style={{
-                    fontSize: "1.5rem",
-                    fontWeight: "bold",
-                    color: card.netValue >= 0 ? "#4ade80" : "#f87171",
-                  }}
-                >
-                  {card.netValue >= 0 ? "+" : ""}${card.netValue.toFixed(0)}
+                <div style={{ display: "flex", gap: "0.75rem", justifyContent: "flex-end" }}>
+                  <div style={{ textAlign: "center" }} className="tooltip-container">
+                    <span className="tooltip-text">Statement credit or direct cash back. Lowest value but simplest to use.</span>
+                    <div style={{ fontSize: "0.65rem", opacity: 0.5 }}>💵 Cash</div>
+                    <div style={{ fontSize: "1rem", fontWeight: "bold", color: card.allRedemptions.cash.netValue >= 0 ? "#94a3b8" : "#f87171" }}>
+                      {card.allRedemptions.cash.netValue >= 0 ? "+" : ""}${card.allRedemptions.cash.netValue.toFixed(0)}
+                    </div>
+                  </div>
+                  <div style={{ textAlign: "center" }} className="tooltip-container">
+                    <span className="tooltip-text">Book travel through the card issuer's portal (e.g., Chase Travel). Usually 1.25-1.5x value.</span>
+                    <div style={{ fontSize: "0.65rem", opacity: 0.5 }}>✈️ Portal</div>
+                    <div style={{ fontSize: "1rem", fontWeight: "bold", color: card.allRedemptions.portal.netValue >= 0 ? "#60a5fa" : "#f87171" }}>
+                      {card.allRedemptions.portal.netValue >= 0 ? "+" : ""}${card.allRedemptions.portal.netValue.toFixed(0)}
+                    </div>
+                  </div>
+                  <div style={{ textAlign: "center" }} className="tooltip-container">
+                    <span className="tooltip-text">Transfer points to airline/hotel partners (e.g., Hyatt, United). Highest value but requires effort.</span>
+                    <div style={{ fontSize: "0.65rem", opacity: 0.5 }}>🔄 Transfer</div>
+                    <div style={{ fontSize: "1.1rem", fontWeight: "bold", color: card.allRedemptions.transfer.netValue >= 0 ? "#4ade80" : "#f87171" }}>
+                      {card.allRedemptions.transfer.netValue >= 0 ? "+" : ""}${card.allRedemptions.transfer.netValue.toFixed(0)}
+                    </div>
+                  </div>
                 </div>
-                <div style={{ fontSize: "0.75rem", opacity: 0.5 }}>
-                  Recurring: ${card.recurringValue.toFixed(0)}/yr
+                <div style={{ fontSize: "0.65rem", opacity: 0.4, marginTop: "0.25rem" }}>
+                  Year 2+: ${card.allRedemptions.cash.recurringValue.toFixed(0)} / ${card.allRedemptions.portal.recurringValue.toFixed(0)} / ${card.allRedemptions.transfer.recurringValue.toFixed(0)}
                 </div>
               </div>
             </div>
@@ -318,7 +365,7 @@ const Recommendation: React.FC<RecommendationProps> = ({ lifestyle }) => {
                   }}
                 >
                   How you earn ($
-                  {(card.pointsEarned * card.pointValue).toFixed(0)})
+                  {(card.pointsEarned * card.selectedPointValue).toFixed(0)})
                 </div>
                 {card.pointBreakdown.map((row, i) => (
                   <div
@@ -357,7 +404,7 @@ const Recommendation: React.FC<RecommendationProps> = ({ lifestyle }) => {
                     Welcome Bonus{" "}
                     <span style={{ fontSize: "0.75rem", opacity: 0.7 }}>
                       ({card.sub?.amount.toLocaleString()} pts @ $
-                      {card.pointValue})
+                      {card.selectedPointValue})
                     </span>
                     :
                   </span>
@@ -366,6 +413,41 @@ const Recommendation: React.FC<RecommendationProps> = ({ lifestyle }) => {
                   </span>
                 </div>
               )}
+
+              {/* Total Points Summary */}
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  marginTop: "0.5rem",
+                  paddingTop: "0.25rem",
+                  borderTop: "1px dashed rgba(255,255,255,0.1)",
+                  fontWeight: "bold",
+                  fontSize: "0.9rem",
+                }}
+              >
+                <span>Total Points (Year 1):</span>
+                <span>
+                  {card.totalPoints.toLocaleString()} pts <span style={{ opacity: 0.7, fontWeight: 'normal', fontSize: '0.8rem' }}>(${card.totalPointsValue.toFixed(0)})</span>
+                </span>
+              </div>
+
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  marginTop: "0.1rem",
+                  fontSize: "0.8rem",
+                  opacity: 0.8
+                }}
+              >
+                <span>Total Points (Year 2+):</span>
+                <span>
+                  {card.pointsEarned.toLocaleString()} pts <span style={{ opacity: 0.7 }}>(${(card.pointsEarned * card.pointValue).toFixed(0)})</span>
+                </span>
+              </div>
+              
+              <div style={{ padding: '0.25rem' }}></div>
 
               {(card.appliedCredits ?? 0) > 0 && (
                 <div

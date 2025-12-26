@@ -34,7 +34,12 @@ export interface Card {
   defaultEstimatedCredits?: number;
   creditBreakdown?: string;
   sub?: CardSub;
-  pointValue: number;
+  pointValue: number; // Keep for backward compat or as default
+  redemptionValues: {
+    cash: number;
+    portal: number;
+    transfer: number;
+  };
   brand: string;
   color: string;
   tier: string;
@@ -65,6 +70,11 @@ export const creditCards: Card[] = [
         text: "80,000 pts after $8k in 6 months"
     },
     pointValue: 0.02, 
+    redemptionValues: {
+      cash: 0.007,
+      portal: 0.01,
+      transfer: 0.02
+    },
     brand: 'Amex',
     color: '#e5e7eb',
     tier: 'Premium',
@@ -105,6 +115,11 @@ export const creditCards: Card[] = [
         text: "125,000 pts after $6k in 3 months"
     },
     pointValue: 0.02, 
+    redemptionValues: {
+      cash: 0.01,
+      portal: 0.015,
+      transfer: 0.02
+    },
     brand: 'Chase',
     color: '#60a5fa', 
     tier: 'Premium',
@@ -140,6 +155,11 @@ export const creditCards: Card[] = [
         text: "75,000 miles after $4k in 3 months"
     },
     pointValue: 0.017,
+    redemptionValues: {
+      cash: 0.005,
+      portal: 0.01,
+      transfer: 0.017
+    },
     brand: 'Capital One',
     color: '#94a3b8', 
     tier: 'Premium',
@@ -173,6 +193,11 @@ export const creditCards: Card[] = [
         text: "60,000 pts after $6k in 6 months"
     },
     pointValue: 0.02, 
+    redemptionValues: {
+      cash: 0.007,
+      portal: 0.01,
+      transfer: 0.02
+    },
     brand: 'Amex',
     color: '#eab308',
     tier: 'Mid',
@@ -204,10 +229,12 @@ export const creditCards: Card[] = [
         months: 3,
         text: "75,000 pts after $5k in 3 months"
     },
-    pointValue: 0.0125, // CSP points often valued at 1.25c on portal? Or 1.25c for travel? Base is 1c, portal 1.25. 
-    // Wait, existing file has pointValue: 0.02 for CSP. Why?
-    // User or I set 2c/pt for Chase/Amex points usually (transfer partners).
-    // I'll keep pointValue: 0.02 as is consistent with other Hyatt/Transfer valuations.
+    pointValue: 0.02, 
+    redemptionValues: {
+      cash: 0.01,
+      portal: 0.0125,
+      transfer: 0.02
+    },
     brand: 'Chase',
     color: '#38bdf8',
     tier: 'Mid',
@@ -239,6 +266,11 @@ export const creditCards: Card[] = [
         text: "60,000 pts after $4k in 3 months"
     },
     pointValue: 0.017, 
+    redemptionValues: {
+      cash: 0.01,
+      portal: 0.01,
+      transfer: 0.017
+    },
     brand: 'Citi',
     color: '#2dd4bf', 
     tier: 'Mid',
@@ -271,6 +303,11 @@ export const creditCards: Card[] = [
         text: "$250 after $3k in 6 months"
     },
     pointValue: 0.01,
+    redemptionValues: {
+      cash: 0.01,
+      portal: 0.01,
+      transfer: 0.01
+    },
     brand: 'Amex',
     color: '#0284c7',
     tier: 'Mid',
@@ -301,6 +338,11 @@ export const creditCards: Card[] = [
         text: "$200 after $1000 in 3 months"
     },
     pointValue: 0.01, 
+    redemptionValues: {
+      cash: 0.01,
+      portal: 0.01,
+      transfer: 0.01
+    },
     brand: 'Capital One',
     color: '#ea580c',
     tier: 'Entry'
@@ -328,6 +370,11 @@ export const creditCards: Card[] = [
         text: "20,000 pts after $1k in 3 months"
     },
     pointValue: 0.01, 
+    redemptionValues: {
+      cash: 0.01,
+      portal: 0.01,
+      transfer: 0.01
+    },
     brand: 'Wells Fargo',
     color: '#dc2626',
     tier: 'Entry'
@@ -347,6 +394,11 @@ export const creditCards: Card[] = [
     defaultEstimatedCredits: 0,
     creditBreakdown: "Rent Day benefits",
     pointValue: 0.02,
+    redemptionValues: {
+      cash: 0.005, // Bilt cashout is low
+      portal: 0.0125,
+      transfer: 0.02
+    },
     brand: 'Bilt',
     color: '#f8fafc', 
     tier: 'Entry'
@@ -374,6 +426,11 @@ export const creditCards: Card[] = [
         text: "$200 after $500 in 3 months"
     },
     pointValue: 0.01, 
+    redemptionValues: {
+      cash: 0.01,
+      portal: 0.01,
+      transfer: 0.01
+    },
     brand: 'Chase',
     color: '#94a3b8', 
     tier: 'Entry'
@@ -394,6 +451,11 @@ export const creditCards: Card[] = [
     defaultEstimatedCredits: 0,
     creditBreakdown: "None",
     pointValue: 0.01,
+    redemptionValues: {
+      cash: 0.01,
+      portal: 0.01,
+      transfer: 0.01
+    },
     brand: 'Citi',
     color: '#14b8a6',
     tier: 'Entry'

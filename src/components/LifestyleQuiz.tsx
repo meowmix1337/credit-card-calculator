@@ -7,6 +7,7 @@ export interface Lifestyle {
   monthlyStreaming: number | '';
   monthlyGeneral: number | '';
   airline: string;
+  redemptionStrategy: 'cash' | 'portal' | 'transfer';
 }
 
 interface LifestyleQuizProps {
